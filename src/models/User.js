@@ -61,7 +61,6 @@ module.exports = (sequelize, DataTypes) => {
             id: {
                 type: DataTypes.TEXT,
                 primaryKey: true,
-                autoIncrement: true,
             },
             firstname: {
                 type: DataTypes.TEXT,
@@ -98,7 +97,7 @@ module.exports = (sequelize, DataTypes) => {
             admin: {
                 type: DataTypes.BOOLEAN,
                 allowNull: true,
-            }
+            },
         },
         {
             tableName: "User",
