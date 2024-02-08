@@ -1,6 +1,5 @@
 const db = require("../models");
 const jwtUtils = require('../utils/signJwt');
-// const bcrypt = require('bcryptjs');
 
 module.exports = {
     //inscription
@@ -61,16 +60,6 @@ module.exports = {
                     message: 'Invalid password',
                 });
             }
-
-            // //compare password
-            // let passwordValid = bcrypt.compareSync(req.body.password, userLogged.password);
-            // //if no password throw error
-            // if (!passwordValid) {
-            //     return res.status(401).json({
-            //         success: false,
-            //         message: 'Password not valid',
-            //     });
-            // }
 
             //sign jwt
             let userToken = jwtUtils.signJwt({

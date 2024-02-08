@@ -31,6 +31,11 @@ module.exports = (sequelize, DataTypes) => {
   const Wishlist = sequelize.define(
     'Wishlist',
     {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
       id_user: {
         type: DataTypes.TEXT,
         allowNull: false,
@@ -53,9 +58,6 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
     }
   );
-
-// User.belongsTo(User, { foreignKey: 'id_user', as: 'user' });
-// .belongsTo(Product, { foreignKey: 'id_product', as: 'product' });
 
   return Wishlist;
 };
