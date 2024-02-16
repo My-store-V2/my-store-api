@@ -1,27 +1,52 @@
 const db = require("../models");
 const jwtUtils = require('../utils/signJwt');
+const bcrypt = require("bcryptjs");
 
 module.exports = {
     //inscription
     register: async (req, res) => {
+
         try {
+            
+            const { firstname, lastname, email, password, address, zipcode, city, phone } = req.body;
+
+            // Check if the user already exists in the database
+            const userExists = await db.User.findOne({ where: { email } });
+
+            if (userExists) {
+                return res.status(400).json({ success: false, message: "User already exists." });
+            }
+
+            // Hash the password
+            const salt = await bcrypt.genSalt(10);
+
+            const hashedPassword = await bcrypt.hash(password, salt);
+            
             // create a new User using Sequelize's create() method
-            const newUser = await db.User.create(req.body);
+            const newUser = await await db.User.create({
+                firstname,
+                lastname,
+                email,
+                password: hashedPassword,
+                address,
+                zipcode,
+                city,
+                phone,
+            });
 
             //create new Token
             let userToken = jwtUtils.signJwt({
                 id: newUser._id,
-                admin: newUser.admin
             })
 
             // return the new User in JSON format
             if (userToken) {
-            return res.status(201).json({
-                results: newUser,
-                success: true,
-                token: userToken,
-                message: `User successfully registered`,
-            });
+                return res.status(201).json({
+                    results: newUser,
+                    success: true,
+                    token: userToken,
+                    message: `User successfully registered`,
+                });
             }
         }
         catch (err) {
@@ -39,7 +64,7 @@ module.exports = {
 
             const { email, password } = req.body;
             
-            //find a user
+            //find the user exists in the database
             const userLogged = await db.User.findOne({ where: { email } });
 
             //if no user throw error 
@@ -50,21 +75,18 @@ module.exports = {
                 });
             }
 
-            //find a password
-            const passwordValid = await db.User.findOne({ where: { password } });
-
-            // If the password is not valid, throw an error
-            if (!passwordValid) {
+            // Check if the password is correct
+            const validPassword = await bcrypt.compare(password, userLogged.password);
+            if (!validPassword) {
                 return res.status(401).json({
                     success: false,
-                    message: 'Invalid password',
+                    message: "Password invalid",
                 });
             }
 
             //sign jwt
             let userToken = jwtUtils.signJwt({
                 id: userLogged._id,
-                admin: userLogged.admin
             })
 
             // Répondre avec un succès et le jeton généré
