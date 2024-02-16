@@ -17,34 +17,78 @@ const AuthController = require('../controllers/auth.controller');
  *       required: true
  *       content:
  *         application/json:
- *           example:
- *             lastname: "John"
- *             firstname: "Doe"
- *             email: "john.doe@example.com"
- *             password: "securepassword"
- *             address: "123 Main St"
- *             zipcode: 12345
- *             city: "Cityville"
- *             phone: "+1234567890"
- *             admin: false
+ *           schema:
+ *             $ref: '#/components/schemas/UserRegistration'
  *     responses:
  *       201:
  *         description: User successfully registered
  *         content:
  *           application/json:
- *             example:
- *               results: "newUser"
- *               success: true
- *               token: "your_generated_token_here"
- *               message: "User successfully registered"
+ *             schema:
+ *               $ref: '#/components/schemas/UserRegistrationResponse'
  *       500:
  *         description: Internal Server Error
  *         content:
  *           application/json:
  *             example:
  *               success: false
- *               message: "Internal Server Error"
+ *               message: Internal Server Error
  */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     UserRegistration:
+ *       type: object
+ *       properties:
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         email:
+ *           type: string
+ *         password:
+ *           type: string
+ *         address:
+ *           type: string
+ *         zipcode:
+ *           type: integer
+ *         city:
+ *           type: string
+ *         phone:
+ *           type: string
+ *         admin:
+ *           type: boolean
+ *       required:
+ *         - firstname
+ *         - lastname
+ *         - email
+ *         - password
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     UserRegistrationResponse:
+ *       type: object
+ *       properties:
+ *         results:
+ *           type: string
+ *         success:
+ *           type: boolean
+ *         token:
+ *           type: string
+ *         message:
+ *           type: string
+ *       required:
+ *         - results
+ *         - success
+ *         - token
+ *         - message
+ */
+
 router.post('/register', AuthController.register);
 
 /**
@@ -61,39 +105,64 @@ router.post('/register', AuthController.register);
  *       required: true
  *       content:
  *         application/json:
- *           example:
- *             email: "john.doe@example.com"
- *             password: "securepassword"
+ *           schema:
+ *             $ref: '#/components/schemas/UserLogin'
  *     responses:
  *       201:
  *         description: User successfully authenticated
  *         content:
  *           application/json:
- *             example:
- *               success: true
- *               message: "User successfully authenticated"
- *               token: "your_generated_token_here"
+ *             schema:
+ *               $ref: '#/components/schemas/UserLoginResponse'
  *       401:
  *         description: Unauthorized
  *         content:
  *           application/json:
  *             example:
  *               success: false
- *               message: "Invalid password"
- *       404:
- *         description: Not Found
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               message: "User not found"
+ *               message: Unauthorized
  *       500:
  *         description: Internal Server Error
  *         content:
  *           application/json:
  *             example:
  *               success: false
- *               message: "Internal Server Error"
+ *               message: Internal Server Error
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     UserLogin:
+ *       type: object
+ *       properties:
+ *         email:
+ *           type: string
+ *         password:
+ *           type: string
+ *       required:
+ *         - email
+ *         - password
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     UserLoginResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *         message:
+ *           type: string
+ *         token:
+ *           type: string
+ *       required:
+ *         - success
+ *         - message
+ *         - token
  */
 
 router.post('/login', AuthController.login);

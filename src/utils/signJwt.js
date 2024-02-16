@@ -1,25 +1,26 @@
-// var jwt = require('jsonwebtoken');
-
-// const signJwt = (body) => {
-  
-//   return jwt.sign({
-//     body
-//   }, process.env.JWT_SECRET);
-    
-// }
-
-// module.exports = signJwt;
-
-// jwtUtils.js
 const jwt = require('jsonwebtoken');
 
-const secretKey = 'votre_clé_secrète_ici';
+function verifyToken (req, res, next) {
 
-function signJwt(payload) {
-  return jwt.sign(payload, secretKey, { expiresIn: '1h' }); // Vous pouvez ajuster la durée de validité selon vos besoins
+  let token = req.headers.authorization;
+  if (!token) {
+    return res.status(403).send({
+      auth: false,
+      token: null,
+      message:"Missing token"
+    })
+  }
+  jwt.verify(token, process.env.JWT_SECRET, function (error, jwtDecoded) {
+    if (error) {
+      return res.status(401).send({
+        auth: false,
+        token: null,
+        message:"none authorized"
+      })
+    }
+    req.userToken = jwtDecoded;
+    next();
+  })
 }
 
-module.exports = {
-  signJwt,
-  // Autres exports si nécessaire
-};
+module.exports = verifyToken;
