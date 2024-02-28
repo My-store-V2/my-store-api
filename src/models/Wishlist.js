@@ -8,6 +8,7 @@ const Product = require('../models/Product');
  *     Wishlist:
  *       type: object
  *       required:
+ *         - id
  *         - id_user
  *         - id_product
  *       properties:
@@ -35,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
-    },
+      },
       id_user: {
         type: DataTypes.TEXT,
         allowNull: false,
@@ -51,11 +52,11 @@ module.exports = (sequelize, DataTypes) => {
           model: Product, // Assuming Product is the Sequelize model for products
           key: 'id',
         },
-      },
+      }
     },
     {
       tableName: 'Wishlist',
-      timestamps: true,
+      timestamps: false,
     }
   );
 
