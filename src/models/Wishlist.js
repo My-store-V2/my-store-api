@@ -55,5 +55,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-    return Wishlist;
+  return Wishlist;
 };

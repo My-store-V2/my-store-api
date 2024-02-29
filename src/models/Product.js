@@ -83,5 +83,13 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
+      Product.associate = (models) => {
+    Product.belongsToMany(models.Wishlist, {
+      through: 'WishlistProduct',
+      as: 'wishlists',
+      foreignKey: 'id_product',
+      otherKey: 'id_wishlist',
+    });
+  };
     return Product;
 };

@@ -14,11 +14,11 @@ module.exports = {
       const id_user = req.user;
 
       // Validate the required fields
-      if ( !id_product) {
-          return res.status(400).json({
-            success: false,
-            message: "  id_product are required fields",
-          });
+      if (!id_product) {
+        return res.status(400).json({
+          success: false,
+          message: "  id_product are required fields",
+        });
       }
 
       // Check if the client and product exist
@@ -48,7 +48,7 @@ module.exports = {
       // Create a new wishlist item
       const newWishlistItem = await db.Wishlist.create(
         { id_user, id_product },
-        { 
+        {
           fields: ["id_user", "id_product"],
         }
       );
@@ -59,7 +59,7 @@ module.exports = {
         message: "Wishlist item added successfully",
       });
 
-    } 
+    }
     catch (error) {
       console.error(error);
 
@@ -91,17 +91,24 @@ module.exports = {
         success: true,
       });
 
-    } 
+    }
     catch (err) {
       res.status(500).json({
         success: false,
         message: err.message,
       });
+
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+      });
     }
   },
 
   // controller to delete a product of wishlist
-  deleteWishlistItem : async (req, res) => {
+  deleteWishlistItem: async (req, res) => {
 
     try {
 
@@ -137,7 +144,7 @@ module.exports = {
         success: true,
         message: `Wishlist item : ${id_product} for product is successfully deleted of wishlist`,
       });
-    } 
+    }
     catch (err) {
       console.error(err);
 
