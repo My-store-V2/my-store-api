@@ -1,9 +1,8 @@
 const jwt = require('jsonwebtoken');
 
-const secretKey = 'votre_clé_secrète_ici';
-
 function signJwt(payload) {
-  return jwt.sign(payload, secretKey, { expiresIn: '1h' }); // Vous pouvez ajuster la durée de validité selon vos besoins
+  console.log(payload);
+  return jwt.sign({ payload }, process.env.JWT_SECRET, { expiresIn: "1h" });
 }
 
 module.exports = { signJwt };

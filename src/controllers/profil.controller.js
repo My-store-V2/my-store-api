@@ -3,13 +3,12 @@ const db = require('../models'); // Assurez-vous de mettre le chemin correct ver
 module.exports = {
     getProfil: async (req, res) => {
 
-        // Supposons que l'ID de l'utilisateur est passé en tant que paramètre dans l'URL
-        const userId = req.params.id; 
+        console.log(req.user, "token decoded");
 
         try {
 
         // Utilisez le modèle Sequelize User pour rechercher l'utilisateur par ID
-        const user = await db.User.findByPk(userId);
+        const user = await db.User.findByPk(req.user);
 
         // Vérifiez si l'utilisateur a été trouvé
         if (!user) {
@@ -27,7 +26,6 @@ module.exports = {
                 firstname: user.firstname,
                 lastname: user.lastname,
                 email: user.email,
-                password: user.password,
                 address: user.address,
                 zipcode: user.zipcode,
                 city: user.city,

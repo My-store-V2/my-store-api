@@ -2,22 +2,16 @@ const express = require("express");
 
 const router = express.Router();
 const profilController = require("../controllers/profil.controller");
+const isAuth = require("../middlewares/isAuth");
 
 /**
  * @swagger
  * paths:
- *   /api/profil/{id}:
+ *   /api/profil:
  *     get:
- *       summary: Get user profile by ID
+ *       summary: Get user profile with token
  *       tags:
  *         - Profil
- *       parameters:
- *         - in: path
- *           name: id
- *           required: true
- *           description: ID of the user to get profile information
- *           schema:
- *             type: string
  *       responses:
  *         '200':
  *           description: User profile retrieved successfully
@@ -70,8 +64,6 @@ const profilController = require("../controllers/profil.controller");
  *           type: string
  *         email:
  *           type: string
- *         password:
- *           type: string
  *         address:
  *           type: string
  *         zipcode:
@@ -85,9 +77,8 @@ const profilController = require("../controllers/profil.controller");
  *         - firstname
  *         - lastname
  *         - email
- *         - password
  */
 
-router.get("/:id", profilController.getProfil);
+router.get("/", isAuth, profilController.getProfil);
 
 module.exports = router;
