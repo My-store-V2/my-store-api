@@ -6,3 +6,17 @@ npx prisma studio
 
 ## generate schema in db
 prisma migrate dev
+
+
+## lien de l'api dev
+### api store dev : 
+https://my-store-api-t5lm.onrender.com/api-docs/
+### swagger dev : 
+https://my-store-api-t5lm.onrender.com/api-docs/
+
+
+## lien de l'api prod
+### api store prod : 
+https://my-store-api-prod.onrender.com/api-docs/
+### swagger prod : 
+https://my-store-api-prod.onrender.com/api-docs/
