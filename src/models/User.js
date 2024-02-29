@@ -41,7 +41,7 @@
  *           type: boolean
  *           description: admin (optional)
  *       example:
- *         id: 1
+ *         id: "68e27f21-c66c-11ee-8370-42010a400005"
  *         firstname: "John"
  *         lastname: "Doe"
  *         email: "john.doe@example.com"

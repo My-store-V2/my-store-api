@@ -7,7 +7,7 @@ module.exports = {
     register: async (req, res) => {
 
         try {
-            
+
             const { firstname, lastname, email, password, address, zipcode, city, phone } = req.body;
 
             // Check if the user already exists in the database
@@ -21,7 +21,7 @@ module.exports = {
             const salt = await bcrypt.genSalt(10);
 
             const hashedPassword = await bcrypt.hash(password, salt);
-            
+
             // create a new User using Sequelize's create() method
             const newUser = await await db.User.create({
                 firstname,
@@ -52,8 +52,8 @@ module.exports = {
         catch (err) {
             // if an error occurs, return a 500 status code with the error message
             res.status(500).json({
-              success: false,
-              message: err.message,
+                success: false,
+                message: err.message,
             });
         }
     },
@@ -63,7 +63,7 @@ module.exports = {
         try {
 
             const { email, password } = req.body;
-            
+
             //find the user exists in the database
             const userLogged = await db.User.findOne({ where: { email } });
 
@@ -84,10 +84,9 @@ module.exports = {
                 });
             }
 
+
             //sign jwt
-            let userToken = jwtUtils.signJwt({
-                id: userLogged._id,
-            })
+            let userToken = jwtUtils.signJwt(userLogged.id)
 
             // Répondre avec un succès et le jeton généré
             return res.status(201).json({
@@ -95,7 +94,7 @@ module.exports = {
                 message: 'User successfully authenticated',
                 token: userToken,
             });
-            
+
         } catch (err) {
             res.status(500).json({
                 success: false,
