@@ -8,6 +8,7 @@ const Product = require("../models/Product");
  *     Wishlist:
  *       type: object
  *       required:
+ *         - id
  *         - id_user
  *         - id_product
  *       properties:
@@ -23,40 +24,36 @@ const Product = require("../models/Product");
  */
 
 module.exports = (sequelize, DataTypes) => {
-    const Wishlist = sequelize.define(
-        "Wishlist",
-        {
-            id_user: {
-                type: DataTypes.TEXT,
-                allowNull: false,
-                references: {
-                    model: User, // Assuming Client is the Sequelize model for clients
-                    key: "id",
-                },
-            },
-            id_product: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: Product, // Assuming Product is the Sequelize model for products
-                    key: "id",
-                },
-            },
+  const Wishlist = sequelize.define(
+    'Wishlist',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      id_user: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        references: {
+          model: User, // Assuming Client is the Sequelize model for clients
+          key: 'id',
         },
-        {
-            tableName: "Wishlist",
-            timestamps: false,
-        }
-    );
+      },
+      id_product: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: Product, // Assuming Product is the Sequelize model for products
+          key: 'id',
+        },
+      }
+    },
+    {
+      tableName: 'Wishlist',
+      timestamps: false,
+    }
+  );
 
-    Wishlist.associate = (models) => {
-    Wishlist.belongsToMany(models.Product, {
-      through: 'WishlistProduct',
-      as: 'products',
-      foreignKey: 'id_wishlist',
-      otherKey: 'id_product',
-    });
-  };
-
-    return Wishlist;
+  return Wishlist;
 };
