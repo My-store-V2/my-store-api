@@ -1,8 +1,7 @@
 const db = require("../models");
-const config = require("../config");
 const jwtUtils = require("../utils/signJwt");
+const nodemailerJwt = require("../utils/sendConfirmationMail");
 const bcrypt = require("bcryptjs");
-const nodemailer = require("nodemailer");
 
 module.exports = {
     //inscription
@@ -45,7 +44,7 @@ module.exports = {
                 phone,
             });
 
-            await sendConfirmationEmail(email);
+            await nodemailerJwt.sendConfirmationEmail(email);
 
             //create new Token
             let userToken = jwtUtils.signJwt({
@@ -114,33 +113,3 @@ module.exports = {
         }
     },
 };
-
-async function sendConfirmationEmail(email) {
-    try {
-        // Créer un transporteur SMTP
-        let transporter = nodemailer.createTransport({
-            service: "Gmail",
-            auth: {
-                user: config.gmail,
-                pass: config.gpwd,
-            },
-        });
-
-        // Définir le contenu de l'e-mail
-        let mailOptions = {
-            from: config.gmail,
-            to: email,
-            subject: "Confirmation d'inscription",
-            text: "Bonjour, vous êtes maintenant inscrit sur notre site. Merci de votre inscription.",
-        };
-
-        // Envoyer l'e-mail
-        let info = await transporter.sendMail(mailOptions);
-        console.log("E-mail de confirmation envoyé à :", email);
-    } catch (error) {
-        console.error(
-            "Erreur lors de l'envoi de l'e-mail de confirmation :",
-            error
-        );
-    }
-}
