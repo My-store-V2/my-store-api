@@ -48,6 +48,7 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 // parse urlencoded request body
 app.use(express.urlencoded({ extended: true }));
 
+console.log(config.frontend_url);
 // cors
 app.use(
     cors({
