@@ -1,34 +1,34 @@
 const db = require("../models"); // Assuming your models are in the '../models' directory
 
 module.exports = {
-  addProductToWishlist: async (req, res) => {
-    
-    const { id_user, id_product } = req.body;
+
+  // controller to add a wishlist
+  addWishlist: async (req, res) => {
+
+    console.log(req.user, "token decoded");
 
     try {
+
+      // Extract data from the request body
+      const { id_product } = req.body;
+      const id_user = req.user;
+
       // Validate the required fields
-      if (!id_user || !id_product) {
+      if (!id_product) {
         return res.status(400).json({
           success: false,
-          message: "id_user and id_product are required fields",
+          message: "  id_product are required fields",
         });
       }
 
-      // Vérifier si l'utilisateur existe
-      const user = await db.User.findByPk(id_user);
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
-      }
+      // Check if the client and product exist
+      const userExists = await db.User.findByPk(id_user);
+      const productExists = await db.Product.findByPk(id_product);
 
-      // Vérifier si le produit existe
-      const product = await db.Product.findByPk(id_product);
-      if (!product) {
+      if (!userExists || !productExists) {
         return res.status(404).json({
           success: false,
-          message: "Product not found",
+          message: "User or Product not found",
         });
       }
 
@@ -39,20 +39,17 @@ module.exports = {
       });
 
       if (existingWishlistItem) {
-        return res.status(400).json({
+        return res.status(409).json({
           success: false,
-          message: "Product is already in the wishlist",
+          message: "Wishlist item already exists",
         });
       }
 
       // Create a new wishlist item
       const newWishlistItem = await db.Wishlist.create(
+        { id_user, id_product },
         {
-            id_user,
-            id_product,
-        },
-        {
-            fields: ["id_user", "id_product"],
+          fields: ["id_user", "id_product"],
         }
       );
 
@@ -62,62 +59,99 @@ module.exports = {
         message: "Wishlist item added successfully",
       });
 
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-        });
+    }
+    catch (error) {
+      console.error(error);
+
+      return res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+      });
     }
   },
-  // controller to get a specific wishlist by id
-  getWishlist: async (req, res) => {
 
-     // Supposons que l'ID de l'utilisateur est passé en tant que paramètre dans l'URL
-     const userId = req.params.id; 
+  // controller to get all wishlists
+  getWishlists: async (req, res) => {
 
     try {
 
-     // Validate the required fields
-     if (!userId) {
-      return res.status(400).json({
+      // retrieve all wishlists using Sequelize's findAll() method
+      const wishlists = await db.Wishlist.findAll();
+
+      if (wishlists.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "No wishlists found",
+        });
+      }
+
+      // return the wishlists in JSON format
+      return res.status(200).json({
+        results: wishlists,
+        success: true,
+      });
+
+    }
+    catch (err) {
+      res.status(500).json({
         success: false,
-        message: "id_user is required field",
+        message: err.message,
+      });
+
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
       });
     }
-
-    // Utilisez le modèle Sequelize User pour rechercher l'utilisateur par ID
-    const user = await db.User.findByPk(userId);
-
-    // Vérifiez si l'utilisateur a été trouvé
-    if (!user) {
-        return res.status(404).json({
-        success: false,
-        message: "User not found",
-        });
-    }
-
-    const wishlist = await db.Wishlist.findByPk(userId, {
-      include: [
-        {
-          model: db.Product,
-          attributes: ['id', 'name', 'price'],
-          through: { attributes: [] },
-          as: 'products',
-        },
-      ],
-    });
-
-    return res.status(200).json({
-      success: true,
-      wishlist: wishlist,
-      message: "Wishlist retrieved successfully",
-    });
-
-  
-    } catch (err) {
-        // if an error occurs, return a 500 status code with the error message
-        res.status(500).json({ message: err.message });
-    }
   },
+
+  // controller to delete a product of wishlist
+  deleteWishlistItem: async (req, res) => {
+
+    try {
+
+      const id_product = req.params.productId;
+
+      // Validate if the user ID and product ID are provided
+      if (!id_product) {
+        return res.status(400).json({
+          success: false,
+          message: "Product ID are required",
+        });
+      }
+
+      // Check if the wishlist item with the given user ID and product ID exists
+      const existingWishlistItem = await db.Wishlist.findOne({
+        where: {
+          id_product: id_product,
+        },
+      });
+
+      if (!existingWishlistItem) {
+        return res.status(404).json({
+          success: false,
+          message: "Wishlist item not found",
+        });
+      }
+
+      // Delete the existing wishlist item using Sequelize's destroy() method
+      await existingWishlistItem.destroy();
+
+      // Return a success message
+      return res.status(200).json({
+        success: true,
+        message: `Wishlist item : ${id_product} for product is successfully deleted of wishlist`,
+      });
+    }
+    catch (err) {
+      console.error(err);
+
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+      });
+    }
+  }
 };
