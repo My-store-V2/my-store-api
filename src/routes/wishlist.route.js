@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const wishlistController = require("../controllers/Wishlist.controller");
+const isAuth = require("../middlewares/isAuth");
+
 
 /**
  * @swagger
@@ -26,12 +28,12 @@ const wishlistController = require("../controllers/Wishlist.controller");
  *             schema:
  *               $ref: '#/components/schemas/WishlistAdditionSuccessResponse'
  *       400:
- *         description: id_user and id_product are required fields
+ *         description: id_product is required field
  *         content:
  *           application/json:
  *             example:
  *               success: false
- *               message: id_user and id_product are required fields
+ *               message: id_product is required field
  *       404:
  *         description: User or Product not found
  *         content:
@@ -55,12 +57,9 @@ const wishlistController = require("../controllers/Wishlist.controller");
  *     WishlistAddition:
  *       type: object
  *       properties:
- *         id_user:
- *           type: string
  *         id_product:
  *           type: integer
  *       required:
- *         - id_user
  *         - id_product
  */
 
@@ -93,18 +92,14 @@ const wishlistController = require("../controllers/Wishlist.controller");
  *     WishlistItem:
  *       type: object
  *       properties:
- *         id_user:
- *           type: string
- *           description: The ID of the user associated with the wishlist item.
  *         id_product:
  *           type: integer
  *           description: The ID of the product associated with the wishlist item.
  *       required:
- *         - id_user
  *         - id_product
  */
 
-router.post("/", wishlistController.addWishlist);
+router.post("/", isAuth, wishlistController.addWishlist);
 
 /**
  * @swagger
@@ -167,85 +162,13 @@ router.post("/", wishlistController.addWishlist);
  *     WishlistItem:
  *       type: object
  *       properties:
- *         id_user:
- *           type: string
  *         id_product:
  *           type: integer
  *       required:
- *         - id_user
  *         - id_product
  */
 
-router.get("/", wishlistController.getWishlists);
-
-/**
- * @swagger
- * tags:
- *   name: Wishlist
- *   description: API operations related to user wishlists
- * /api/wishlist/{id}:
- *   get:
- *     summary: Get user's wishlist by user ID
- *     description: Retrieve the wishlist items for a specific user.
- *     tags: [Wishlist]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID of the user
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Wishlist items retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/WishlistResponse'
- *       404:
- *         description: Not found. User not found or wishlist is empty.
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               message: Not found. User not found or wishlist is empty.
- *       500:
- *         description: Internal Server Error
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               message: Internal Server Error
- */
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     WishlistResponse:
- *       type: object
- *       properties:
- *         success:
- *           type: boolean
- *         wishlistItems:
- *           type: object
- *           properties:
- *             id_user:
- *               type: string
- *             id_product:
- *               type: integer
- *           required:
- *             - id_user
- *             - id_product
- *         message:
- *           type: string
- *       required:
- *         - success
- *         - wishlistItems
- *         - message
- */
-
-router.get("/:id", wishlistController.getWishlistOfUser);
+router.get("/", isAuth, wishlistController.getWishlists);
 
 /**
  * @swagger
@@ -253,18 +176,12 @@ router.get("/:id", wishlistController.getWishlistOfUser);
  *   name: Wishlist
  *   description: API operations related to user wishlists
  * paths:
- *   /api/wishlist/{userId}/product/{productId}:
+ *   /api/wishlist/{productId}:
  *     delete:
  *       summary: Remove a product from the user's wishlist
  *       description: Remove a specific product from the user's wishlist based on user ID and product ID.
  *       tags: [Wishlist]
  *       parameters:
- *         - in: path
- *           name: userId
- *           required: true
- *           description: User ID
- *           schema:
- *             type: string
  *         - in: path
  *           name: productId
  *           required: true
@@ -312,6 +229,6 @@ router.get("/:id", wishlistController.getWishlistOfUser);
  *         - message
  */
 
-router.delete('/:userId/product/:productId', wishlistController.deleteWishlistItem);
+router.delete('/:productId', isAuth, wishlistController.deleteWishlistItem);
 
 module.exports = router;
