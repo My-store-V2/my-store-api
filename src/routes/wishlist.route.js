@@ -108,7 +108,7 @@ router.post("/", isAuth, wishlistController.addWishlist);
  *   description: API operations related to user wishlists
  * /api/wishlist:
  *   get:
- *     summary: Get all wishlists
+ *     summary: Get a wishlist of user with token
  *     description: Retrieve all wishlists.
  *     tags: [Wishlist]
  *     responses:
@@ -168,7 +168,7 @@ router.post("/", isAuth, wishlistController.addWishlist);
  *         - id_product
  */
 
-router.get("/", isAuth, wishlistController.getWishlists);
+router.get("/", isAuth, wishlistController.getWishlist);
 
 /**
  * @swagger

@@ -5,8 +5,6 @@ module.exports = {
   // controller to add a wishlist
   addWishlist: async (req, res) => {
 
-    console.log(req.user, "token decoded");
-
     try {
 
       // Extract data from the request body
@@ -17,18 +15,17 @@ module.exports = {
       if (!id_product) {
         return res.status(400).json({
           success: false,
-          message: "  id_product are required fields",
+          message: "  id_product is required field",
         });
       }
 
-      // Check if the client and product exist
-      const userExists = await db.User.findByPk(id_user);
+      // Check if the product exist
       const productExists = await db.Product.findByPk(id_product);
 
-      if (!userExists || !productExists) {
+      if (!productExists) {
         return res.status(404).json({
           success: false,
-          message: "User or Product not found",
+          message: "Product not found",
         });
       }
 
@@ -70,13 +67,17 @@ module.exports = {
     }
   },
 
-  // controller to get all wishlists
-  getWishlists: async (req, res) => {
+  // controller to get wishlist of user ID
+  getWishlist: async (req, res) => {
 
     try {
 
+      const id_user = req.user;
+
       // retrieve all wishlists using Sequelize's findAll() method
-      const wishlists = await db.Wishlist.findAll();
+      const wishlists = await db.Wishlist.findAll({
+        where: { id_user },
+      });
 
       if (wishlists.length === 0) {
         return res.status(404).json({
@@ -106,19 +107,21 @@ module.exports = {
 
     try {
 
+      const id_user = req.user;
       const id_product = req.params.productId;
 
       // Validate if the user ID and product ID are provided
       if (!id_product) {
         return res.status(400).json({
           success: false,
-          message: "Product ID are required",
+          message: "Product ID is required",
         });
       }
 
       // Check if the wishlist item with the given user ID and product ID exists
       const existingWishlistItem = await db.Wishlist.findOne({
         where: {
+          id_user,
           id_product: id_product,
         },
       });
