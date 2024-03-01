@@ -2,9 +2,13 @@ const db = require("../models"); // Assurez-vous de mettre le chemin correct ver
 
 module.exports = {
     getProfil: async (req, res) => {
+        
         try {
+
+            const id_user = req.user;
+
             // Utilisez le modèle Sequelize User pour rechercher l'utilisateur par ID
-            const user = await db.User.findByPk(req.user);
+            const user = await db.User.findByPk(id_user);
 
             // Vérifiez si l'utilisateur a été trouvé
             if (!user) {
