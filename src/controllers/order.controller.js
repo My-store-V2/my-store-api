@@ -33,9 +33,7 @@ module.exports = {
 
 
             // Check if the product already exists in the database
-            console.log(tab_product_id);
             for (product_id of tab_product_id) {
-                console.log(product_id);
                 const productExists = await db.Product.findOne({ where: { id: product_id } });
                 if (!productExists) {
                     return res.status(400).json({ success: false, message: "Product does not exist." });
@@ -65,7 +63,6 @@ module.exports = {
 
             // Create the order details
             for (product of tab_product) {
-                console.log(product)
                 await db.OrderDetails.create({
                     order_id: order.id,
                     product_id: product.id,
@@ -83,7 +80,6 @@ module.exports = {
         }
         catch (err) {
             // if an error occurs, return a 500 status code with the error message
-            console.log(err);
             res.status(500).json({
                 success: false,
                 message: err.message,
