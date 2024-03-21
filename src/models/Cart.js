@@ -19,7 +19,7 @@ const Product = require("../models/Product");
  *           type: integer
  *           description: The ID of the product associated with the wishlist item
  *         quantity:
- *           type:integer
+ *           type: integer
  *           description: The quantity of product inside the basket
  *       example:
  *         id_user: 'a38edd6b-c662-11ee-8370-42010a400005'
