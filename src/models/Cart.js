@@ -5,12 +5,12 @@ const Product = require("../models/Product");
  * @swagger
  * components:
  *   schemas:
- *     Wishlist:
+ *     Cart:
  *       type: object
  *       required:
- *         - id
  *         - id_user
  *         - id_product
+ *         - quantity
  *       properties:
  *         id_user:
  *           type: string
@@ -24,6 +24,7 @@ const Product = require("../models/Product");
  *       example:
  *         id_user: 'a38edd6b-c662-11ee-8370-42010a400005'
  *         id_product: 2
+ *         quantity: 2
  */
 
 module.exports = (sequelize, DataTypes) => {
@@ -61,6 +62,15 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: false,
         }
     );
+
+    Cart.associate = (models) => {
+        Cart.belongsTo(models.Product, {
+            through: "ProductCart",
+            as: "products",
+            foreignKey: "product_id",
+            other_key: "id_product",
+        }); // Cart appartient à Product
+    };
 
     return Cart;
 };

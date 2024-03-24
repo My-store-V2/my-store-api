@@ -83,13 +83,21 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-      Product.associate = (models) => {
-    Product.belongsToMany(models.Wishlist, {
-      through: 'WishlistProduct',
-      as: 'wishlists',
-      foreignKey: 'id_product',
-      otherKey: 'id_wishlist',
-    });
-  };
+    Product.associate = (models) => {
+        Product.belongsToMany(models.Wishlist, {
+            through: "WishlistProduct",
+            as: "wishlists",
+            foreignKey: "id_product",
+            otherKey: "id_wishlist",
+        });
+    };
+    Product.associate = (models) => {
+        Product.belongsToMany(models.Cart, {
+            through: "CartProduct",
+            as: "carts",
+            foreignKey: "product_id",
+            otherKey: "id_cart",
+        });
+    };
     return Product;
 };
