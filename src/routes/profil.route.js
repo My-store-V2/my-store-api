@@ -52,7 +52,7 @@ const isAuth = require("../middlewares/isAuth");
  *         - success
  *         - user
  *         - message
- *         
+ *
  *     UserProfile:
  *       type: object
  *       properties:

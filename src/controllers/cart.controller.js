@@ -35,8 +35,8 @@ module.exports = {
 
     getCart: async (req, res) => {
         try {
-            const { user_id } = req.body;
-
+            const user = await db.User.findByPk(req.user);
+            let user_id = user.id;
             let cartItems;
 
             if (user_id) {
