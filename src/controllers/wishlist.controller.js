@@ -69,18 +69,26 @@ module.exports = {
     getWishlists: async (req, res) => {
         try {
             // retrieve all wishlists using Sequelize's findAll() method
-            const wishlists = await db.Wishlist.findAll();
+            const user = await db.User.findByPk(req.user);
+            let id_user = user.id;
+            let wishlistItems;
 
-            if (wishlists.length === 0) {
-                return res.status(404).json({
-                    success: false,
-                    message: "No wishlists found",
+            if (id_user) {
+                // Si l'utilisateur est connecté, récupérez les produits du panier à partir de la base de données
+                wishlistItems = await db.Wishlist.findAll({
+                    where: { id_user },
+                    include: [
+                        {
+                            model: db.Product,
+                            as: "products", // Utilisez l'alias spécifié dans votre association
+                        },
+                    ], // Inclure les informations sur le produit associé
                 });
             }
 
             // return the wishlists in JSON format
             return res.status(200).json({
-                results: wishlists,
+                results: wishlistItems,
                 success: true,
             });
         } catch (err) {
@@ -95,7 +103,7 @@ module.exports = {
     deleteWishlistItem: async (req, res) => {
         try {
             const id_product = req.params.productId;
-
+            const user_id = req.user;
             // Validate if the user ID and product ID are provided
             if (!id_product) {
                 return res.status(400).json({
@@ -103,29 +111,30 @@ module.exports = {
                     message: "Product ID are required",
                 });
             }
+            if (user_id) {
+                // Check if the wishlist item with the given user ID and product ID exists
+                const existingWishlistItem = await db.Wishlist.findOne({
+                    where: {
+                        id_product: id_product,
+                    },
+                });
 
-            // Check if the wishlist item with the given user ID and product ID exists
-            const existingWishlistItem = await db.Wishlist.findOne({
-                where: {
-                    id_product: id_product,
-                },
-            });
+                if (!existingWishlistItem) {
+                    return res.status(404).json({
+                        success: false,
+                        message: "Wishlist item not found",
+                    });
+                }
 
-            if (!existingWishlistItem) {
-                return res.status(404).json({
-                    success: false,
-                    message: "Wishlist item not found",
+                // Delete the existing wishlist item using Sequelize's destroy() method
+                await existingWishlistItem.destroy();
+
+                // Return a success message
+                return res.status(200).json({
+                    success: true,
+                    message: `Wishlist item : ${id_product} for product is successfully deleted of wishlist`,
                 });
             }
-
-            // Delete the existing wishlist item using Sequelize's destroy() method
-            await existingWishlistItem.destroy();
-
-            // Return a success message
-            return res.status(200).json({
-                success: true,
-                message: `Wishlist item : ${id_product} for product is successfully deleted of wishlist`,
-            });
         } catch (err) {
             console.error(err);
 
