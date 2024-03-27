@@ -1,5 +1,5 @@
-const Product = require('../models/Product');
-const Orders = require('../models/Order');
+const Product = require("../models/Product");
+const Orders = require("../models/Order");
 
 /**
  * @swagger
@@ -39,44 +39,52 @@ const Orders = require('../models/Order');
  */
 
 module.exports = (sequelize, DataTypes) => {
-  const Order_Details = sequelize.define(
-    'Order_Details',
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      order_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: Orders, 
-          key: 'id',
+    const Order_Details = sequelize.define(
+        "Order_Details",
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+                autoIncrement: true,
+            },
+            order_id: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                references: {
+                    model: Orders,
+                    key: "id",
+                },
+            },
+            product_id: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                references: {
+                    model: Product,
+                    key: "id",
+                },
+            },
+            quantity: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+            },
+            unit_price: {
+                type: DataTypes.DECIMAL,
+                allowNull: true,
+            },
         },
-      },
-      product_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: Product, 
-          key: 'id',
-        },
-      },
-      quantity: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-      unit_price: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
-      },
-    },
-    {
-      tableName: 'Order_Details',
-      timestamps: false,
-    }
-  );
+        {
+            tableName: "Order_Details",
+            timestamps: false,
+        }
+    );
+    Order_Details.associate = (models) => {
+        Order_Details.belongsTo(models.Product, {
+            through: "ProductOrder_Details",
+            as: "products",
+            foreignKey: "product_id",
+            other_key: "id_product",
+        }); // Cart appartient à Product
+    };
 
-  return Order_Details;
+    return Order_Details;
 };

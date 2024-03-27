@@ -114,4 +114,82 @@ router.get("/", isAuth, orderController.getOrders);
 
 router.get("/:id", isAuth, orderController.getOrderDetails);
 
+/**
+ * @swagger
+ * /api/orders/{id}:
+ *   put:
+ *     summary: Mettre à jour le statut de la commande
+ *     description: Mettre à jour le statut d'une commande spécifique associée à l'utilisateur authentifié.
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID de la commande à mettre à jour le statut.
+ *         schema:
+ *           type: integer
+ *       - in: body
+ *         name: newStatus
+ *         description: Informations sur le nouveau statut.
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 newStatus:
+ *                   type: string
+ *                   description: Les valeurs autorisées sont payed, refunded, refunded on demand.
+ *                   example: "refunded on demand"
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               newStatus:
+ *                 type: string
+ *                 example: "refunded on demand"
+ *     responses:
+ *       '200':
+ *         description: Statut de la commande mis à jour avec succès
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: true
+ *               message: Statut de la commande mis à jour avec succès
+ *       '400':
+ *         description: Requête incorrecte
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               error: Statut invalide fourni
+ *       '403':
+ *         description: Non autorisé
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               message: Vous n'êtes pas autorisé à mettre à jour le statut de cette commande
+ *       '404':
+ *         description: Commande introuvable
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               message: Commande non trouvée
+ *       '500':
+ *         description: Erreur interne du serveur
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               message: Erreur interne du serveur. Quelque chose s'est mal passé.
+ */
+
+router.put("/:id", isAuth, orderController.updateStatus);
+
 module.exports = router;
