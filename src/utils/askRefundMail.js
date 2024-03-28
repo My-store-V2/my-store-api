@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 const config = require("../config");
 
-async function sendConfirmationEmail(res, email) {
+async function askRefundMail(res, email, orderId) {
     try {
         // Créer un transporteur SMTP
         let transporter = nodemailer.createTransport({
@@ -16,21 +16,21 @@ async function sendConfirmationEmail(res, email) {
         let mailOptions = {
             from: config.gmail,
             to: email,
-            subject: "Confirmation d'inscription",
-            text: "Bonjour, vous êtes maintenant inscrit sur notre site. Merci de votre inscription.",
+            subject: "Demande de remboursement",
+            text: `La commande ${orderId} nécessite un remboursement.`,
         };
 
         // Envoyer l'e-mail
         let info = await transporter.sendMail(mailOptions);
-        // Répondre avec un succès si l'e-mail est envoyé avec succès
     } catch (error) {
         // Répondre avec une erreur si une erreur se produit lors de l'envoi de l'e-mail
         res.status(500).json({
             success: false,
-            message: "Erreur lors de l'envoi de l'e-mail de confirmation",
+            message:
+                "Erreur lors de l'envoi de l'e-mail de demande de remboursement",
             error: error.message,
         });
     }
 }
 
-module.exports = { sendConfirmationEmail };
+module.exports = { askRefundMail };

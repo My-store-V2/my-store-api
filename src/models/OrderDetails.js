@@ -1,44 +1,46 @@
-const Order = require('./order');
-const Product = require('./Product');
+const Product = require("./Product");
+const Orders = require("./Order");
 
 /**
-* @swagger
+ * @swagger
  * components:
  *   schemas:
- *      OrderDetails:
+ *     Order_Details:
  *       type: object
  *       required:
- *         - id
- *         - id_user
- *         - id_product
+ *         - order_id
+ *         - product_id
+ *         - quantity
+ *         - unit_price
  *       properties:
- *         id_order:
- *           type: string
- *           description: The ID of the order associated with the OrderDetails item
- *         id_product:
+ *         id:
  *           type: integer
- *           description: The ID of the product associated with the  OrderDetails item
+ *           format: int64
+ *           description: The auto-generated ID of the order detail
+ *         order_id:
+ *           type: integer
+ *           description: The ID of the order associated with the order detail
+ *         product_id:
+ *           type: integer
+ *           description: The ID of the product associated with the order detail
  *         quantity:
  *           type: integer
- *           description: The quantity of the product in the order
+ *           description: The quantity of the product in the order detail
  *         unit_price:
- *           type: integer
- *           description: The unit price of the product in the order
+ *           type: number
+ *           format: float
+ *           description: The unit price of the product in the order detail
  *       example:
- *         id_order: 1
- *         id_product: 2
+ *         id: 1
+ *         order_id: 1
+ *         product_id: 1
  *         quantity: 2
- *         unit_price: 200
-    */
-/**
+ *         unit_price: 25.5
  */
 
-
-
 module.exports = (sequelize, DataTypes) => {
-    // Definition of the Order model
-    const OrderDetails = sequelize.define(
-        "OrderDetails",
+    const Order_Details = sequelize.define(
+        "Order_Details",
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -49,8 +51,8 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: Order,
-                    key: 'id',
+                    model: Orders,
+                    key: "id",
                 },
             },
             product_id: {
@@ -58,16 +60,16 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 references: {
                     model: Product,
-                    key: 'id',
+                    key: "id",
                 },
             },
             quantity: {
                 type: DataTypes.INTEGER,
-                allowNull: false,
+                allowNull: true,
             },
             unit_price: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
+                type: DataTypes.DECIMAL,
+                allowNull: true,
             },
         },
         {
@@ -75,5 +77,14 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: false,
         }
     );
-    return OrderDetails;
+    Order_Details.associate = (models) => {
+        Order_Details.belongsTo(models.Product, {
+            through: "ProductOrder_Details",
+            as: "products",
+            foreignKey: "product_id",
+            other_key: "id_product",
+        }); // Cart appartient à Product
+    };
+
+    return Order_Details;
 };

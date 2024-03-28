@@ -85,11 +85,28 @@ module.exports = (sequelize, DataTypes) => {
 
     Product.associate = (models) => {
         Product.belongsToMany(models.Wishlist, {
-            through: 'WishlistProduct',
-            as: 'wishlists',
-            foreignKey: 'id_product',
-            otherKey: 'id_wishlist',
+            through: "WishlistProduct",
+            as: "wishlists",
+            foreignKey: "id_product",
+            otherKey: "id_wishlist",
         });
     };
+    Product.associate = (models) => {
+        Product.belongsToMany(models.Cart, {
+            through: "CartProduct",
+            as: "carts",
+            foreignKey: "product_id",
+            otherKey: "id_cart",
+        });
+    };
+    Product.associate = (models) => {
+        Product.belongsToMany(models.Order_Details, {
+            through: "Order_DetailsProduct",
+            as: "Order_Details",
+            foreignKey: "product_id",
+            otherKey: "id_order_details",
+        });
+    };
+
     return Product;
 };

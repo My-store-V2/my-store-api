@@ -1,20 +1,31 @@
-const User = require('./User');
+const User = require("./User");
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     Order:
+ *     Orders:
  *       type: object
+ *       required:
+ *         - user_id   
+ *         - order_date
+ *         - delivery_mode
+ *         - total_price
  *       properties:
  *         id:
  *           type: integer
  *           format: int64
- *           description: The auto-generated ID of the Order
+ *           description: The auto-generated ID of the wishlist item
+ *         user_id:
+ *           type: string
+ *           description: The ID of the user (client) associated with the order item
  *         order_date:
  *           type: string
  *           format: date
- *           description: The date of the order
+ *           description: The date of the order passed
+ *         status:
+ *           type: string
+ *           description: The status of the order
  *         delivery_mode:
  *           type: string
  *           description: The delivery mode of the order
@@ -48,22 +59,33 @@ const User = require('./User');
 */
 
 module.exports = (sequelize, DataTypes) => {
-    // Definition of the Order model
-    const Order = sequelize.define(
-        "Order",
+    const Orders = sequelize.define(
+        "Orders",
         {
             id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
                 autoIncrement: true,
             },
+            user_id: {
+                type: DataTypes.TEXT,
+                allowNull: false,
+                references: {
+                    model: User, // Assuming Client is the Sequelize model for clients
+                    key: "id",
+                },
+            },
             order_date: {
                 type: DataTypes.DATE,
-                allowNull: false,
+                allowNull: true,
+            },
+            status: {
+                type: DataTypes.TEXT,
+                allowNull: true,
             },
             delivery_mode: {
                 type: DataTypes.TEXT,
-                allowNull: false,
+                allowNull: true,
             },
             delivery_address: {
                 type: DataTypes.TEXT,
@@ -74,24 +96,12 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true,
             },
             delivery_zipcode: {
-                type: DataTypes.TEXT,
+                type: DataTypes.INTEGER,
                 allowNull: true,
             },
             total_price: {
                 type: DataTypes.INTEGER,
-                allowNull: false,
-            },
-            status: {
-                type: DataTypes.TEXT,
-                allowNull: false,
-            },
-            user_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: User,
-                    key: 'id'
-                },
+                allowNull: true,
             },
         },
         {
@@ -99,5 +109,6 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: false,
         }
     );
-    return Order;
+
+    return Orders;
 };

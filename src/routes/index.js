@@ -15,6 +15,6 @@ router.use("/wishlist", wishlistRoute);
 
 router.use("/profil", profilRoute);
 
-router.use("/order", orderRoute);
+router.use("/orders", orderRoute);
 
 module.exports = router;

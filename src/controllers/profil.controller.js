@@ -37,4 +37,32 @@ module.exports = {
             });
         }
     },
+
+    updateProfil: async (req, res) => {
+        try {
+            // retrieve the User with Sequelize's findByPk() method
+            const user = await db.User.findByPk(req.user);
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found",
+                });
+            }
+
+            // update the User's attributes
+            await user.update(req.body);
+
+            // return the updated User in JSON format
+            return res.status(200).json({
+                results: user,
+                success: true,
+            });
+        } catch (err) {
+            // if an error occurs, return a 500 status code with the error message
+            res.status(500).json({
+                success: false,
+                message: err.message,
+            });
+        }
+    },
 };

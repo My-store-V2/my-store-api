@@ -54,16 +54,4 @@ Object.keys(db).forEach((modelName) => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-
-// db.Wishlist.belongsTo(db.User, { foreignKey: 'id_user', as: 'user' });
-// // db.Wishlist.belongsTo(db.Product, { foreignKey: 'id_product', as: 'product' });
-// db.Wishlist.belongsTo(db.Product, { foreignKey: 'id_product', as: 'products' });
-
-// // db.Wishlist.belongsToMany(db.Product, {
-// //     through: 'Wishlist',
-// //     as: 'products', // Assurez-vous que l'alias ici correspond à celui utilisé dans la requête
-// //     // foreignKey: 'id_wishlist',
-// //     otherKey: 'id_product',
-// //   });
-
 module.exports = db;
