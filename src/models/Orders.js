@@ -96,6 +96,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: true,
             },
+            stripe_payment_id: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+            }
         },
         {
             tableName: "Orders",

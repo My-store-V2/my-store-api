@@ -11,10 +11,10 @@ module.exports = {
             // mode de livraison (livraison à domicile ou retrait en magasin)
             // adresse de livraison (si livraison à domicile)
             // liste des produits à commander
-            const delivery_address = "";
-            const delivery_city = "";
-            const delivery_zipcode = 0;
-            const delivery_mode = body.delivery_mode;
+            let delivery_address = "";
+            let delivery_city = "";
+            let delivery_zipcode = 0;
+            let delivery_mode = body.delivery_mode;
             if (delivery_mode == "delivery" && delivery_mode != "pickup") {
                 delivery_address = body.delivery_address;
                 delivery_city = body.delivery_city;
@@ -82,10 +82,10 @@ module.exports = {
             );
 
             // create the order in stripe
-            // const paymentIntent = await stripe.paymentIntents.create({
-            //     amount: total_price,
-            //     currency: 'eur',
-            // })
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: total_price,
+                currency: 'eur',
+            })
 
             // Create the order
             const order = await db.Orders.create({
@@ -96,21 +96,19 @@ module.exports = {
                 delivery_zipcode: delivery_zipcode,
                 total_price: total_price,
                 status: status,
-                user_id: id_user
+                user_id: id_user,
+                stripe_payment_id: paymentIntent.id
             });
 
-            console.log("test")
 
 
             // Create the order details
             for (product of tab_product) {
-                console.log(product.id)
                 await db.OrderDetails.create({
                     order_id: order.id,
                     product_id: product.id,
                     quantity: 1,
-                    unit_price: product.price,
-                    // client_secret: paymentIntent.client_secret
+                    unit_price: product.price
                 });
             }
 
@@ -119,9 +117,11 @@ module.exports = {
                 success: true,
                 message: "Order successfully created.",
                 order: order,
+                client_secret: paymentIntent.client_secret
             });
         } catch (err) {
             // if an error occurs, return a 500 status code with the error message
+            console.log(err)
             res.status(500).json({
                 success: false,
                 message: err.message,
