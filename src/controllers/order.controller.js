@@ -1,5 +1,6 @@
 const db = require("../models");
 const askRefundMail = require("../utils/askRefundMail");
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 
 module.exports = {
     //création de commande
@@ -80,6 +81,12 @@ module.exports = {
                 0
             );
 
+            // create the order in stripe
+            // const paymentIntent = await stripe.paymentIntents.create({
+            //     amount: total_price,
+            //     currency: 'eur',
+            // })
+
             // Create the order
             const order = await db.Orders.create({
                 order_date: new Date(),
@@ -89,16 +96,21 @@ module.exports = {
                 delivery_zipcode: delivery_zipcode,
                 total_price: total_price,
                 status: status,
-                user_id: id_user,
+                user_id: id_user
             });
+
+            console.log("test")
+
 
             // Create the order details
             for (product of tab_product) {
+                console.log(product.id)
                 await db.OrderDetails.create({
                     order_id: order.id,
                     product_id: product.id,
                     quantity: 1,
                     unit_price: product.price,
+                    // client_secret: paymentIntent.client_secret
                 });
             }
 
@@ -168,7 +180,7 @@ module.exports = {
                 });
             }
 
-            const orderDetails = await db.Order_Details.findAll({
+            const orderDetails = await db.OrderDetails.findAll({
                 where: { order_id: orderId },
                 include: [
                     {

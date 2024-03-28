@@ -130,7 +130,7 @@ router.get("/", isAuth, orderController.getOrders);
  *                 results:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Order_Details'
+ *                     $ref: '#/components/schemas/OrderDetails'
  *                   description: List of order details.
  *       '403':
  *         description: Unauthorized
