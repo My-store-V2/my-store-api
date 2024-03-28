@@ -1,4 +1,5 @@
 const express = require("express");
+const session = require("express-session");
 const cors = require("cors");
 const config = require("./config");
 const swaggerJSDoc = require("swagger-jsdoc");
@@ -9,6 +10,14 @@ const app = express();
 
 // parse json request body
 app.use(express.json());
+
+app.use(
+    session({
+        secret: process.env.JWT_SECRET, // Clé secrète pour signer les cookies de session
+        resave: false,
+        saveUninitialized: false,
+    })
+);
 
 const sequelize = new Sequelize(
     config.database,

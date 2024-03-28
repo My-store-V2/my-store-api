@@ -81,6 +81,7 @@ const isAuth = require("../middlewares/isAuth");
 
 router.get("/", isAuth, profilController.getProfil);
 
+
 /**
  * @swagger
  * paths:
@@ -185,4 +186,5 @@ router.get("/", isAuth, profilController.getProfil);
  */
 
 router.put("/", isAuth, profilController.updateProfil);
+
 module.exports = router;
