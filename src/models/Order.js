@@ -42,13 +42,6 @@ const User = require("./User");
  *           type: number
  *           format: int
  *           description: The total price of the order
- *         status:
- *           type: string
- *           description: The status of the order
- *       required:
- *         - order_date
- *         - delivery_mode
- *         - total_price
  *       example:
  *         order_date: "2022-01-01"
  *         delivery_mode: "delivery"
