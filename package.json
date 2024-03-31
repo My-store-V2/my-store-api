@@ -4,24 +4,30 @@
     "description": "",
     "main": "app.js",
     "dependencies": {
-        "@prisma/client": "^5.4.1",
+        "bcryptjs": "^2.4.3",
         "body-parser": "^1.20.2",
         "cors": "^2.8.5",
-        "dotenv": "^16.3.1",
-        "express": "^4.18.2"
+        "dotenv": "^16.4.1",
+        "express": "^4.18.2",
+        "express-session": "^1.18.0",
+        "jsonwebtoken": "^9.0.2",
+        "mysql2": "^3.9.1",
+        "nodemailer": "^6.9.11",
+        "sequelize": "^6.37.1",
+        "swagger-jsdoc": "^6.2.8",
+        "swagger-ui-express": "^5.0.0"
     },
     "devDependencies": {
-        "eslint": "^8.50.0",
+        "eslint": "^8.56.0",
         "eslint-config-airbnb-base": "^15.0.0",
-        "eslint-plugin-import": "^2.28.1",
-        "nodemon": "^3.0.1",
-        "prisma": "^5.3.1"
+        "eslint-plugin-import": "^2.29.1",
+        "nodemon": "^3.0.3"
     },
     "scripts": {
         "lint": "eslint .  --ext .js",
         "lint-fix": "eslint --fix .  --ext .js",
         "dev": "nodemon src/app.js",
-        "start": "npx prisma generate && node src/app.js",
+        "start": "node src/app.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "",

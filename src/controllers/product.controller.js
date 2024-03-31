@@ -1,51 +1,61 @@
-const { PrismaClient } = require('@prisma/client');
+const db = require("../models");
 
-const throwError = require('../utils/throwError');
+module.exports = {
+    // controller to get all products
+    getProducts: async (req, res) => {
+        try {
+            // retrieve all products using Sequelize's findAll() method
+            const products = await db.Product.findAll();
 
-const prisma = new PrismaClient();
+            if (products.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: "No products found",
+                });
+            }
 
-exports.getProducts = async (req, res, next) => {
-    try {
-        const products = await prisma.product.findMany({
-            where: { active: true },
-            take: req.query.take ? Number(req.query.take) : 8,
-        });
-        if (!products) {
-            const err = throwError('No products found', 404);
-            return next(err);
-        }
-        return res.send(
-            {
+            // return the products in JSON format
+            return res.status(200).json({
+                results: products,
                 success: true,
-                data: products,
-            },
-        );
-    } catch (err) {
-        return next(err);
-    }
-};
+            });
+        } catch (err) {
+            // if an error occurs, return a 500 status code with the error message
+            res.status(500).json({
+                success: false,
+                message: err.message,
+            });
+        }
+    },
 
-exports.getProduct = async (req, res, next) => {
-    try {
-        const { id } = req.params;
-        if (!id) {
-            const err = throwError('No product id provided', 404);
-            next(err);
+    // controller to get a specific product by id
+    getProduct: async (req, res) => {
+        try {
+            if (isNaN(req.params.id)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Bad request. No id provided",
+                });
+            }
+
+            // retrieve the product with Sequelize's findByPk() method
+            const product = await db.Product.findByPk(req.params.id);
+
+            if (!product) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Product not found",
+                });
+            }
+
+            // return the product in JSON format
+            return res.status(200).json({
+                results: product,
+                success: true,
+            });
+        } catch (err) {
+            // if an error occurs, return a 500 status code with the error message
+            res.status(500).json({ message: err.message });
         }
-        const product = await prisma.product.findUnique({
-            where: { id: Number(id) },
-        });
-        if (!product) {
-            const err = throwError('Product not found', 404);
-            return next(err);
-        }
-        return res.json(
-            {
-                data: product,
-                sucess: true,
-            },
-        );
-    } catch (err) {
-        return next(err);
-    }
+    },
 };
