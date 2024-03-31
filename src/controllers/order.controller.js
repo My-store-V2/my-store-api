@@ -22,31 +22,25 @@ module.exports = {
             const tab_product_id = body.products;
             var tab_product = [];
             if (!delivery_mode) {
-                return res
-                    .status(400)
-                    .json({
-                        success: false,
-                        message: "Delivery mode is required.",
-                    });
+                return res.status(400).json({
+                    success: false,
+                    message: "Delivery mode is required.",
+                });
             }
             if (
                 delivery_mode == "delivery" &&
                 (!delivery_address || !delivery_city || !delivery_zipcode)
             ) {
-                return res
-                    .status(400)
-                    .json({
-                        success: false,
-                        message: "Delivery address is required.",
-                    });
+                return res.status(400).json({
+                    success: false,
+                    message: "Delivery address is required.",
+                });
             }
             if (!tab_product_id) {
-                return res
-                    .status(400)
-                    .json({
-                        success: false,
-                        message: "Products are required.",
-                    });
+                return res.status(400).json({
+                    success: false,
+                    message: "Products are required.",
+                });
             }
 
             // Check if the product already exists in the database
@@ -55,23 +49,19 @@ module.exports = {
                     where: { id: product_id },
                 });
                 if (!productExists) {
-                    return res
-                        .status(400)
-                        .json({
-                            success: false,
-                            message: "Product does not exist.",
-                        });
+                    return res.status(400).json({
+                        success: false,
+                        message: "Product does not exist.",
+                    });
                 }
                 tab_product.push(productExists);
             }
 
             if (!tab_product || tab_product.length == 0) {
-                return res
-                    .status(400)
-                    .json({
-                        success: false,
-                        message: "Product does not exist.",
-                    });
+                return res.status(400).json({
+                    success: false,
+                    message: "Product does not exist.",
+                });
             }
 
             const status = "pending";
@@ -178,11 +168,18 @@ module.exports = {
                 ],
             });
 
-            return res.status(200).json({
-                success: true,
-                results: orderDetails,
-                message: "Order details retrieved successfully",
+            const ordersInfo = await db.Orders.findAll({
+                where: { id: orderId },
             });
+
+            const finalResult = {
+                results: orderDetails,
+                orders: ordersInfo,
+                success: true,
+                message: "Order details retrieved successfully",
+            };
+
+            return res.status(200).json(finalResult);
         } catch (error) {
             console.error(error);
             res.status(500).json({
