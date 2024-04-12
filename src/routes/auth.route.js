@@ -2,6 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const AuthController = require('../controllers/auth.controller');
+const verifyToken = require('../middlewares/verifiyToken');
 
 /**
  * @swagger
@@ -166,5 +167,7 @@ router.post('/register', AuthController.register);
  */
 
 router.post('/login', AuthController.login);
+
+router.post('/checkToken', verifyToken, AuthController.checkToken);
 
 module.exports = router;
