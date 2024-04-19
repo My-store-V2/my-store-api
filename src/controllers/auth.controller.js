@@ -111,4 +111,11 @@ module.exports = {
             });
         }
     },
+
+    checkToken: async (req, res) => {
+        return res.status(200).send({
+            success: true,
+            message: "User successfully authenticated",
+        })
+    },
 };
