@@ -1,11 +1,11 @@
 const Product = require("./Product");
-const Orders = require("./Order");
+const Orders = require("./Orders");
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     Order_Details:
+ *     OrderDetails:
  *       type: object
  *       required:
  *         - order_id
@@ -39,8 +39,8 @@ const Orders = require("./Order");
  */
 
 module.exports = (sequelize, DataTypes) => {
-    const Order_Details = sequelize.define(
-        "Order_Details",
+    const OrderDetails = sequelize.define(
+        "OrderDetails",
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -77,14 +77,14 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: false,
         }
     );
-    Order_Details.associate = (models) => {
-        Order_Details.belongsTo(models.Product, {
-            through: "ProductOrder_Details",
+    OrderDetails.associate = (models) => {
+        OrderDetails.belongsTo(models.Product, {
+            through: "ProductOrderDetails",
             as: "products",
             foreignKey: "product_id",
             other_key: "id_product",
         }); // Cart appartient à Product
     };
 
-    return Order_Details;
+    return OrderDetails;
 };

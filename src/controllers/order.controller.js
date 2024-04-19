@@ -1,5 +1,6 @@
 const db = require("../models");
 const askRefundMail = require("../utils/askRefundMail");
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 
 module.exports = {
     //création de commande
@@ -10,10 +11,10 @@ module.exports = {
             // mode de livraison (livraison à domicile ou retrait en magasin)
             // adresse de livraison (si livraison à domicile)
             // liste des produits à commander
-            const delivery_address = "";
-            const delivery_city = "";
-            const delivery_zipcode = 0;
-            const delivery_mode = body.delivery_mode;
+            let delivery_address = "";
+            let delivery_city = "";
+            let delivery_zipcode = 0;
+            let delivery_mode = body.delivery_mode;
             if (delivery_mode == "delivery" && delivery_mode != "pickup") {
                 delivery_address = body.delivery_address;
                 delivery_city = body.delivery_city;
@@ -70,6 +71,12 @@ module.exports = {
                 0
             );
 
+            // create the order in stripe
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: total_price,
+                currency: 'eur',
+            })
+
             // Create the order
             const order = await db.Orders.create({
                 order_date: new Date(),
@@ -80,7 +87,11 @@ module.exports = {
                 total_price: total_price,
                 status: status,
                 user_id: id_user,
+                stripe_payment_id: paymentIntent.id,
+                stripe_client_secret: paymentIntent.client_secret
             });
+
+
 
             // Create the order details
             for (product of tab_product) {
@@ -88,7 +99,7 @@ module.exports = {
                     order_id: order.id,
                     product_id: product.id,
                     quantity: 1,
-                    unit_price: product.price,
+                    unit_price: product.price
                 });
             }
 
@@ -100,6 +111,7 @@ module.exports = {
             });
         } catch (err) {
             // if an error occurs, return a 500 status code with the error message
+            console.log(err)
             res.status(500).json({
                 success: false,
                 message: err.message,
@@ -158,7 +170,7 @@ module.exports = {
                 });
             }
 
-            const orderDetails = await db.Order_Details.findAll({
+            const orderDetails = await db.OrderDetails.findAll({
                 where: { order_id: orderId },
                 include: [
                     {
