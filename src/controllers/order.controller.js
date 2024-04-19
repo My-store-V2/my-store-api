@@ -87,7 +87,8 @@ module.exports = {
                 total_price: total_price,
                 status: status,
                 user_id: id_user,
-                stripe_payment_id: paymentIntent.id
+                stripe_payment_id: paymentIntent.id,
+                stripe_client_secret: paymentIntent.client_secret
             });
 
 
@@ -107,7 +108,6 @@ module.exports = {
                 success: true,
                 message: "Order successfully created.",
                 order: order,
-                client_secret: paymentIntent.client_secret
             });
         } catch (err) {
             // if an error occurs, return a 500 status code with the error message

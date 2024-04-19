@@ -5,11 +5,18 @@ const config = require("./config");
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUI = require("swagger-ui-express");
 const Sequelize = require("sequelize");
+const bodyParser = require("body-parser");
+
 
 const app = express();
 
-// parse json request body
-app.use(express.json());
+app.use(
+    express.json({
+        verify: (req, res, buffer) => (req['rawBody'] = buffer),
+    })
+);// parse json request body
+app.use(bodyParser.json());
+
 
 app.use(
     session({
@@ -56,6 +63,8 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 // parse urlencoded request body
 app.use(express.urlencoded({ extended: true }));
+
+
 
 // cors
 app.use(
