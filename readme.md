@@ -1,13 +1,4 @@
-## run API in develop mode
-npm run dev
-
-## Launch prisma studio
-npx prisma studio
-
-## generate schema in db
-prisma migrate dev
-
-
+# Lien pour l’api store
 ## lien de l'api dev
 ### api store dev : 
 https://my-store-api-t5lm.onrender.com/
