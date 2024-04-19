@@ -46,9 +46,8 @@ module.exports = {
 
             await nodemailerJwt.sendConfirmationEmail(res, email);
             //create new Token
-            let userToken = jwtUtils.signJwt({
-                id: newUser._id,
-            });
+            let userToken = jwtUtils.signJwt(newUser.id);
+
 
             // return the new User in JSON format
             if (userToken) {
@@ -110,5 +109,12 @@ module.exports = {
                 message: err.message,
             });
         }
+    },
+
+    checkToken: async (req, res) => {
+        return res.status(200).send({
+            success: true,
+            message: "User successfully authenticated",
+        })
     },
 };

@@ -1,5 +1,6 @@
 const db = require("../models");
 const askRefundMail = require("../utils/askRefundMail");
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 
 module.exports = {
     //création de commande
@@ -10,10 +11,10 @@ module.exports = {
             // mode de livraison (livraison à domicile ou retrait en magasin)
             // adresse de livraison (si livraison à domicile)
             // liste des produits à commander
-            const delivery_address = "";
-            const delivery_city = "";
-            const delivery_zipcode = 0;
-            const delivery_mode = body.delivery_mode;
+            let delivery_address = "";
+            let delivery_city = "";
+            let delivery_zipcode = 0;
+            let delivery_mode = body.delivery_mode;
             if (delivery_mode == "delivery" && delivery_mode != "pickup") {
                 delivery_address = body.delivery_address;
                 delivery_city = body.delivery_city;
@@ -22,31 +23,25 @@ module.exports = {
             const tab_product_id = body.products;
             var tab_product = [];
             if (!delivery_mode) {
-                return res
-                    .status(400)
-                    .json({
-                        success: false,
-                        message: "Delivery mode is required.",
-                    });
+                return res.status(400).json({
+                    success: false,
+                    message: "Delivery mode is required.",
+                });
             }
             if (
                 delivery_mode == "delivery" &&
                 (!delivery_address || !delivery_city || !delivery_zipcode)
             ) {
-                return res
-                    .status(400)
-                    .json({
-                        success: false,
-                        message: "Delivery address is required.",
-                    });
+                return res.status(400).json({
+                    success: false,
+                    message: "Delivery address is required.",
+                });
             }
             if (!tab_product_id) {
-                return res
-                    .status(400)
-                    .json({
-                        success: false,
-                        message: "Products are required.",
-                    });
+                return res.status(400).json({
+                    success: false,
+                    message: "Products are required.",
+                });
             }
 
             // Check if the product already exists in the database
@@ -55,23 +50,19 @@ module.exports = {
                     where: { id: product_id },
                 });
                 if (!productExists) {
-                    return res
-                        .status(400)
-                        .json({
-                            success: false,
-                            message: "Product does not exist.",
-                        });
+                    return res.status(400).json({
+                        success: false,
+                        message: "Product does not exist.",
+                    });
                 }
                 tab_product.push(productExists);
             }
 
             if (!tab_product || tab_product.length == 0) {
-                return res
-                    .status(400)
-                    .json({
-                        success: false,
-                        message: "Product does not exist.",
-                    });
+                return res.status(400).json({
+                    success: false,
+                    message: "Product does not exist.",
+                });
             }
 
             const status = "pending";
@@ -79,6 +70,12 @@ module.exports = {
                 (acc, product) => acc + product.price,
                 0
             );
+
+            // create the order in stripe
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: total_price,
+                currency: 'eur',
+            })
 
             // Create the order
             const order = await db.Orders.create({
@@ -90,7 +87,11 @@ module.exports = {
                 total_price: total_price,
                 status: status,
                 user_id: id_user,
+                stripe_payment_id: paymentIntent.id,
+                stripe_client_secret: paymentIntent.client_secret
             });
+
+
 
             // Create the order details
             for (product of tab_product) {
@@ -98,7 +99,7 @@ module.exports = {
                     order_id: order.id,
                     product_id: product.id,
                     quantity: 1,
-                    unit_price: product.price,
+                    unit_price: product.price
                 });
             }
 
@@ -110,6 +111,7 @@ module.exports = {
             });
         } catch (err) {
             // if an error occurs, return a 500 status code with the error message
+            console.log(err)
             res.status(500).json({
                 success: false,
                 message: err.message,
@@ -168,7 +170,7 @@ module.exports = {
                 });
             }
 
-            const orderDetails = await db.Order_Details.findAll({
+            const orderDetails = await db.OrderDetails.findAll({
                 where: { order_id: orderId },
                 include: [
                     {
@@ -178,11 +180,18 @@ module.exports = {
                 ],
             });
 
-            return res.status(200).json({
-                success: true,
-                results: orderDetails,
-                message: "Order details retrieved successfully",
+            const ordersInfo = await db.Orders.findAll({
+                where: { id: orderId },
             });
+
+            const finalResult = {
+                results: orderDetails,
+                orders: ordersInfo,
+                success: true,
+                message: "Order details retrieved successfully",
+            };
+
+            return res.status(200).json(finalResult);
         } catch (error) {
             console.error(error);
             res.status(500).json({
